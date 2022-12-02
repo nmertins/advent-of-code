@@ -1,29 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
+
+	"github.com/nmertins/advent-of-code/2022/utils"
 )
-
-func ReadFile(path string) (fileLines []string) {
-	readFile, err := os.Open(path)
-	defer readFile.Close()
-	if err != nil {
-		fmt.Println(err)
-		return make([]string, 0)
-	}
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-
-	for fileScanner.Scan() {
-		fileLines = append(fileLines, fileScanner.Text())
-	}
-
-	return fileLines
-}
 
 func ParseInput(input []string) (totals []int) {
 	total := 0
@@ -47,7 +30,7 @@ func Max(values []int) int {
 }
 
 func main() {
-	input := ReadFile("resources/input.txt")
+	input := utils.ReadFile("resources/input.txt")
 	totals := ParseInput(input)
 	sort.Ints(totals)
 

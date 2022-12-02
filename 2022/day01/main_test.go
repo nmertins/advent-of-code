@@ -2,11 +2,13 @@ package main
 
 import (
 	"testing"
+
+	"github.com/nmertins/advent-of-code/2022/utils"
 )
 
 func TestDay01(t *testing.T) {
 	t.Run("parse input file", func(t *testing.T) {
-		input := ReadFile("resources/sample_input.txt")
+		input := utils.ReadFile("resources/sample_input.txt")
 		if len(input) != 14 {
 			t.Fatalf("sample_input.txt should have 14 lines, instead found %d", len(input))
 		}
@@ -24,4 +26,8 @@ func TestDay01(t *testing.T) {
 			t.Fatalf("expected max value to be 24000, got %d", max)
 		}
 	})
+}
+
+func ReadFile(s string) {
+	panic("unimplemented")
 }
