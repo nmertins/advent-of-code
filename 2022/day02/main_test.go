@@ -17,6 +17,25 @@ func TestDay02(t *testing.T) {
 		assertShapesEqual(t, Paper, opponentShape)
 		assertShapesEqual(t, Rock, myShape)
 	})
+
+	t.Run("compare shapes", func(t *testing.T) {
+		if Rock.Compare(Paper) != 0 {
+			t.Fatal("Paper beats Rock")
+		}
+	})
+
+	t.Run("calculate score", func(t *testing.T) {
+		input := utils.ReadFile("resources/sample_input.txt")
+		total := 0
+		for _, line := range input {
+			opponentShape, myShape := ParseInput(line)
+			total += Score(opponentShape, myShape)
+		}
+
+		if total != 15 {
+			t.Fatalf("expected final score 15, got %d", total)
+		}
+	})
 }
 
 func assertShapesEqual(t testing.TB, expected RockPaperScissorsShape, actual RockPaperScissorsShape) {
