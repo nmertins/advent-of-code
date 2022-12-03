@@ -2,6 +2,9 @@ package main
 
 import(
 	"strings"
+	"fmt"
+
+	"github.com/nmertins/advent-of-code/2022/utils"
 )
 
 type RockPaperScissorsShape int
@@ -76,4 +79,14 @@ func convertStringToShape(s string) RockPaperScissorsShape {
 
 func Score(opponentShape RockPaperScissorsShape, myShape RockPaperScissorsShape) int {
 	return int(myShape) + myShape.Compare(opponentShape)
+}
+
+func main() {
+	input := utils.ReadFile("resources/input.txt")
+	total := 0
+	for _, line := range input {
+		opponentShape, myShape := ParseInput(line)
+		total += Score(opponentShape, myShape)
+	}
+	fmt.Println(total)
 }
