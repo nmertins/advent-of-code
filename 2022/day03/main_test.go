@@ -59,7 +59,7 @@ func TestDay03(t *testing.T) {
 		}
 	})
 
-	t.Run("test sample input", func(t *testing.T) {
+	t.Run("test sample input for part 1", func(t *testing.T) {
 		input := utils.ReadFile("resources/sample_input.txt")
 		rucksacks := ParseInput(input)
 		total := 0
@@ -70,6 +70,30 @@ func TestDay03(t *testing.T) {
 
 		if total != 157 {
 			t.Fatalf("expected total priority 157, got %d", total)
+		}
+	})
+
+	t.Run("find group badge", func(t *testing.T) {
+		input := utils.ReadFile("resources/sample_input.txt")
+		badges := GetGroupBadges(input)
+		if badges[0] != "r" {
+			t.Fatalf("expected badge to be 'r', got %q", badges[0])
+		}
+		if badges[1] != "Z" {
+			t.Fatalf("expected badge to be 'Z', got %q", badges[0])
+		}
+	})
+
+	t.Run("test sample input for part 2", func(t *testing.T) {
+		input := utils.ReadFile("resources/sample_input.txt")
+		badges := GetGroupBadges(input)
+		total := 0
+		for _, badge := range badges {
+			total += GetPriority(badge)
+		}
+
+		if total != 70 {
+			t.Fatalf("expected 70, got %d", total)
 		}
 	})
 }
