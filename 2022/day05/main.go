@@ -1,8 +1,13 @@
 package main
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
+)
+
+const (
+	StepRegex = `^move ([0-9]*) from ([0-9]*) to ([0-9]*)$`
 )
 
 type Stack []Crate
@@ -13,10 +18,12 @@ func (c Crate) IsEmpty() bool {
 	return len(c) == 0
 }
 
-type Procedure []string
+type Procedure []Step
 
 type Step struct {
-	numberOfCratesToMove int
+	cratesToMove int
+	fromStack    int
+	toStack      int
 }
 
 func ParseInput(input []string) ([]Stack, Procedure) {
@@ -72,6 +79,31 @@ func parseCrates(input string) []Crate {
 }
 
 func parseProcedure(procedureString []string) Procedure {
-	// fmt.Printf("procedure: %v", procedureString)
-	return Procedure{}
+	procedure := Procedure{}
+	for _, stepString := range procedureString {
+		step := parseStep(stepString)
+
+		procedure = append(procedure, step)
+	}
+
+	return procedure
+}
+
+func parseStep(stepString string) Step {
+	re := regexp.MustCompile(StepRegex)
+	matches := re.FindAllString(stepString, -1)
+	cratesToMove, err := strconv.Atoi(matches[0])
+	if err != nil {
+		return Step{0, 0, 0}
+	}
+	fromStack, err := strconv.Atoi(matches[0])
+	if err != nil {
+		return Step{0, 0, 0}
+	}
+	toStack, err := strconv.Atoi(matches[0])
+	if err != nil {
+		return Step{0, 0, 0}
+	}
+
+	return Step{cratesToMove, fromStack, toStack}
 }
