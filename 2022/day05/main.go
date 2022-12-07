@@ -111,12 +111,24 @@ func parseStep(stepString string) Step {
 	return Step{cratesToMove, fromStack, toStack}
 }
 
-func ApplyProcedure(stacks []Stack, procedure Procedure) []Stack {
+func ApplyProcedure9000(stacks []Stack, procedure Procedure) []Stack {
 	for _, step := range procedure {
-		fromStack := stacks[step.fromStack-1]
 		var cratesToMove []Crate
-		cratesToMove, stacks[step.fromStack-1] = fromStack[:step.cratesToMove], fromStack[step.cratesToMove:]
+		cratesToMove, stacks[step.fromStack-1] = stacks[step.fromStack-1][:step.cratesToMove], stacks[step.fromStack-1][step.cratesToMove:]
 		for i := range cratesToMove {
+			stacks[step.toStack-1] = append([]Crate{cratesToMove[i]}, stacks[step.toStack-1]...)
+		}
+	}
+
+	return stacks
+}
+
+func ApplyProcedure9001(stacks []Stack, procedure Procedure) []Stack {
+	for _, step := range procedure {
+		var cratesToMove []Crate
+		cratesToMove, stacks[step.fromStack-1] = stacks[step.fromStack-1][:step.cratesToMove], stacks[step.fromStack-1][step.cratesToMove:]
+		// TODO: gotta be a better way to do this
+		for i := len(cratesToMove) - 1; i >= 0; i-- {
 			stacks[step.toStack-1] = append([]Crate{cratesToMove[i]}, stacks[step.toStack-1]...)
 		}
 	}
@@ -128,7 +140,7 @@ func main() {
 	input := utils.ReadFile("resources/input.txt")
 	stacks, procedure := ParseInput(input)
 
-	stacks = ApplyProcedure(stacks, procedure)
+	stacks = ApplyProcedure9001(stacks, procedure)
 
 	topCrates := ""
 	for _, crates := range stacks {

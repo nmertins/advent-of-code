@@ -38,11 +38,11 @@ func TestDay05(t *testing.T) {
 		}
 	})
 
-	t.Run("move crates", func(t *testing.T) {
+	t.Run("move crates 9000", func(t *testing.T) {
 		input := utils.ReadFile("resources/sample_input.txt")
 		stacks, procedure := ParseInput(input)
 
-		stacks = ApplyProcedure(stacks, procedure)
+		stacks = ApplyProcedure9000(stacks, procedure)
 
 		if stacks[0][0] != "C" {
 			fmt.Printf("%v\n", stacks)
@@ -61,6 +61,22 @@ func TestDay05(t *testing.T) {
 
 		if topCrates != "CMZ" {
 			t.Fatalf("expected top crates to be \"CMZ\", got %q", topCrates)
+		}
+	})
+
+	t.Run("move crates 9001", func(t *testing.T) {
+		input := utils.ReadFile("resources/sample_input.txt")
+		stacks, procedure := ParseInput(input)
+
+		stacks = ApplyProcedure9001(stacks, procedure)
+
+		topCrates := ""
+		for _, crates := range stacks {
+			topCrates += string(crates[0])
+		}
+
+		if topCrates != "MCD" {
+			t.Fatalf("expected top crates to be \"MCD\", got %q", topCrates)
 		}
 	})
 }
