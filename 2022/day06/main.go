@@ -8,12 +8,21 @@ import (
 )
 
 const (
-	StartOfPacketMarkerLength = 4
+	StartOfPacketMarkerLength  = 4
+	StartOfMessageMarkerLength = 14
 )
 
-func FindMarker(input string) string {
-	for i := 0; i < len(input)-StartOfPacketMarkerLength; i++ {
-		marker := input[i : i+StartOfPacketMarkerLength]
+func FindPacketMarker(input string) string {
+	return FindMarker(input, StartOfPacketMarkerLength)
+}
+
+func FindMessageMarker(input string) string {
+	return FindMarker(input, StartOfMessageMarkerLength)
+}
+
+func FindMarker(input string, markerLength int) string {
+	for i := 0; i < len(input)-markerLength; i++ {
+		marker := input[i : i+markerLength]
 		if AllCharactersUnique(marker) {
 			return marker
 		}
@@ -23,7 +32,7 @@ func FindMarker(input string) string {
 }
 
 func GetMarkerIndex(signal string, marker string) int {
-	return strings.Index(signal, marker) + StartOfPacketMarkerLength
+	return strings.Index(signal, marker) + len(marker)
 }
 
 func AllCharactersUnique(input string) bool {
@@ -37,7 +46,7 @@ func AllCharactersUnique(input string) bool {
 
 func main() {
 	signal := utils.ReadFile("resources/input.txt")[0]
-	marker := FindMarker(signal)
+	marker := FindMessageMarker(signal)
 	index := GetMarkerIndex(signal, marker)
 	fmt.Println(index)
 }

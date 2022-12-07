@@ -56,14 +56,14 @@ func TestDay06(t *testing.T) {
 		}
 
 		for _, testCase := range testCases {
-			actual := FindMarker(testCase.Input)
+			actual := FindPacketMarker(testCase.Input)
 			if testCase.Expected != actual {
 				t.Fatalf("expected %q got %q", testCase.Expected, actual)
 			}
 		}
 	})
 
-	t.Run("find marker index", func(t *testing.T) {
+	t.Run("find packet marker index", func(t *testing.T) {
 		testCases := []struct {
 			Input    string
 			Expected int
@@ -83,7 +83,35 @@ func TestDay06(t *testing.T) {
 		}
 
 		for _, testCase := range testCases {
-			marker := FindMarker(testCase.Input)
+			marker := FindPacketMarker(testCase.Input)
+			index := GetMarkerIndex(testCase.Input, marker)
+			if testCase.Expected != index {
+				t.Fatalf("case %q: expected %d got %d", testCase.Input, testCase.Expected, index)
+			}
+		}
+	})
+
+	t.Run("find message marker index", func(t *testing.T) {
+		testCases := []struct {
+			Input    string
+			Expected int
+		}{
+			{
+				Input:    "mjqjpqmgbljsphdztnvjfqwrcgsmlb",
+				Expected: 19,
+			},
+			{
+				Input:    "bvwbjplbgvbhsrlpgdmjqwftvncz",
+				Expected: 23,
+			},
+			{
+				Input:    "nppdvjthqldpwncqszvftbrmjlhg",
+				Expected: 23,
+			},
+		}
+
+		for _, testCase := range testCases {
+			marker := FindMessageMarker(testCase.Input)
 			index := GetMarkerIndex(testCase.Input, marker)
 			if testCase.Expected != index {
 				t.Fatalf("case %q: expected %d got %d", testCase.Input, testCase.Expected, index)
