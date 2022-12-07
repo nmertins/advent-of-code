@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/nmertins/advent-of-code/2022/utils"
 )
 
 const (
@@ -91,19 +94,46 @@ func parseProcedure(procedureString []string) Procedure {
 
 func parseStep(stepString string) Step {
 	re := regexp.MustCompile(StepRegex)
-	matches := re.FindAllString(stepString, -1)
-	cratesToMove, err := strconv.Atoi(matches[0])
+	matches := re.FindStringSubmatch(stepString)
+	cratesToMove, err := strconv.Atoi(matches[1])
 	if err != nil {
 		return Step{0, 0, 0}
 	}
-	fromStack, err := strconv.Atoi(matches[0])
+	fromStack, err := strconv.Atoi(matches[2])
 	if err != nil {
 		return Step{0, 0, 0}
 	}
-	toStack, err := strconv.Atoi(matches[0])
+	toStack, err := strconv.Atoi(matches[3])
 	if err != nil {
 		return Step{0, 0, 0}
 	}
 
 	return Step{cratesToMove, fromStack, toStack}
+}
+
+func ApplyProcedure(stacks []Stack, procedure Procedure) []Stack {
+	for _, step := range procedure {
+		fromStack := stacks[step.fromStack-1]
+		var cratesToMove []Crate
+		cratesToMove, stacks[step.fromStack-1] = fromStack[:step.cratesToMove], fromStack[step.cratesToMove:]
+		for i := range cratesToMove {
+			stacks[step.toStack-1] = append([]Crate{cratesToMove[i]}, stacks[step.toStack-1]...)
+		}
+	}
+
+	return stacks
+}
+
+func main() {
+	input := utils.ReadFile("resources/input.txt")
+	stacks, procedure := ParseInput(input)
+
+	stacks = ApplyProcedure(stacks, procedure)
+
+	topCrates := ""
+	for _, crates := range stacks {
+		topCrates += string(crates[0])
+	}
+
+	fmt.Println(topCrates)
 }

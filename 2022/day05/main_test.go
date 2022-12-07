@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/nmertins/advent-of-code/2022/utils"
@@ -23,7 +24,7 @@ func TestDay05(t *testing.T) {
 		}
 
 		if stacks[1][2] != "M" {
-			t.Fatalf("expected crate \"M\", got %q", stacks[0][0])
+			t.Fatalf("expected crate \"M\", got %q", stacks[1][2])
 		}
 
 		if procedure[0].cratesToMove != 1 {
@@ -34,6 +35,32 @@ func TestDay05(t *testing.T) {
 		}
 		if procedure[0].toStack != 1 {
 			t.Fatalf("expected step to move crate(s) to stack 1, got %d", procedure[0].toStack)
+		}
+	})
+
+	t.Run("move crates", func(t *testing.T) {
+		input := utils.ReadFile("resources/sample_input.txt")
+		stacks, procedure := ParseInput(input)
+
+		stacks = ApplyProcedure(stacks, procedure)
+
+		if stacks[0][0] != "C" {
+			fmt.Printf("%v\n", stacks)
+			t.Fatalf("expected crate \"C\", got %q", stacks[0][0])
+		}
+
+		if stacks[1][0] != "M" {
+			fmt.Printf("%v\n", stacks)
+			t.Fatalf("expected crate \"M\", got %q", stacks[1][0])
+		}
+
+		topCrates := ""
+		for _, crates := range stacks {
+			topCrates += string(crates[0])
+		}
+
+		if topCrates != "CMZ" {
+			t.Fatalf("expected top crates to be \"CMZ\", got %q", topCrates)
 		}
 	})
 }
