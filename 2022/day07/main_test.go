@@ -53,4 +53,49 @@ func TestDay07(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("change directory absolute path", func(t *testing.T) {
+		filesystem := NewFilesystem()
+		filesystem.currentLocation = "/some/arbitrary/path"
+		command := ChangeDirectoryCommand{Destination: "/another/path"}
+		filesystem = command.ApplyCommand(filesystem)
+
+		if filesystem.currentLocation != "/another/path" {
+			t.Fatal("absolute path should replace existing path")
+		}
+	})
+
+	t.Run("change directory relative path", func(t *testing.T) {
+		filesystem := NewFilesystem()
+		command := ChangeDirectoryCommand{Destination: "relative/path"}
+		filesystem = command.ApplyCommand(filesystem)
+
+		if filesystem.currentLocation != "/relative/path" {
+			t.Fatalf("expected %q, got %q", "/relative/path", filesystem.currentLocation)
+		}
+
+		filesystem.currentLocation = "/home"
+		filesystem = command.ApplyCommand(filesystem)
+
+		if filesystem.currentLocation != "/home/relative/path" {
+			t.Fatalf("expected %q, got %q", "/home/relative/path", filesystem.currentLocation)
+		}
+	})
+
+	t.Run("list command", func(t *testing.T) {
+		filesystem := NewFilesystem()
+		children := []INode{
+			Directory{Name: "a"},
+			File{Name: "b.txt", Size: 14848514},
+			File{Name: "c.dat", Size: 8504156},
+			Directory{Name: "d"},
+		}
+		command := ListCommand{Children: children}
+
+		filesystem = command.ApplyCommand(filesystem)
+
+		if len(filesystem.root.Children) != 4 {
+			t.Fatalf("expected %d nodes, got %d", 4, len(filesystem.root.Children))
+		}
+	})
 }

@@ -13,20 +13,32 @@ const (
 )
 
 type INode interface {
-	GetName() string
+	GetSize() int
 }
 
 type Filesystem struct {
-	tree            map[string]INode
-	currentLocation []string
+	root            Directory
+	currentLocation string
+}
+
+func NewFilesystem() Filesystem {
+	return Filesystem{
+		root:            Directory{Name: "", Children: make([]INode, 0)},
+		currentLocation: "/",
+	}
 }
 
 type Directory struct {
-	Name string
+	Name     string
+	Children []INode
 }
 
 func (d Directory) GetName() string {
 	return d.Name
+}
+
+func (d Directory) GetSize() int {
+	return 0
 }
 
 type File struct {
@@ -38,8 +50,13 @@ func (f File) GetName() string {
 	return f.Name
 }
 
+func (f File) GetSize() int {
+	return f.Size
+}
+
 type Command interface {
 	GetCommandType() CommandType
+	ApplyCommand(Filesystem) Filesystem
 }
 
 type ChangeDirectoryCommand struct {
@@ -50,12 +67,29 @@ func (c ChangeDirectoryCommand) GetCommandType() CommandType {
 	return ChangeDirectory
 }
 
+func (c ChangeDirectoryCommand) ApplyCommand(filesystem Filesystem) Filesystem {
+	if strings.Index(c.Destination, "/") == 0 {
+		filesystem.currentLocation = c.Destination
+	} else {
+		if strings.LastIndex(filesystem.currentLocation, "/") != len(filesystem.currentLocation)-1 {
+			filesystem.currentLocation += "/"
+		}
+		filesystem.currentLocation += c.Destination
+	}
+
+	return filesystem
+}
+
 type ListCommand struct {
 	Children []INode
 }
 
 func (l ListCommand) GetCommandType() CommandType {
 	return List
+}
+
+func (l ListCommand) ApplyCommand(filesystem Filesystem) Filesystem {
+	return filesystem
 }
 
 func ParseCommandString(commandString []string) Command {
@@ -72,7 +106,7 @@ func ParseCommandString(commandString []string) Command {
 			nodeSplit := strings.Split(nodeString, " ")
 			var node INode
 			if nodeSplit[0] == "dir" {
-				node = Directory{Name: nodeSplit[1]}
+				node = Directory{Name: nodeSplit[1], Children: make([]INode, 0)}
 			} else {
 				size, _ := strconv.Atoi(nodeSplit[0])
 				node = File{Name: nodeSplit[1], Size: size}
