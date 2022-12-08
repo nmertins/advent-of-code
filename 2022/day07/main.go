@@ -12,8 +12,17 @@ const (
 	List
 )
 
+type INodeType int
+
+const (
+	DirectoryNode INodeType = iota
+	FileNode
+)
+
 type INode interface {
 	GetSize() int
+	GetName() string
+	GetNodeType() INodeType
 }
 
 type Filesystem struct {
@@ -23,14 +32,14 @@ type Filesystem struct {
 
 func NewFilesystem() Filesystem {
 	return Filesystem{
-		root:            Directory{Name: "", Children: make([]INode, 0)},
+		root:            Directory{Name: "", Children: make(map[string]INode, 0)},
 		currentLocation: "/",
 	}
 }
 
 type Directory struct {
 	Name     string
-	Children []INode
+	Children map[string]INode
 }
 
 func (d Directory) GetName() string {
@@ -39,6 +48,10 @@ func (d Directory) GetName() string {
 
 func (d Directory) GetSize() int {
 	return 0
+}
+
+func (d Directory) GetNodeType() INodeType {
+	return DirectoryNode
 }
 
 type File struct {
@@ -52,6 +65,10 @@ func (f File) GetName() string {
 
 func (f File) GetSize() int {
 	return f.Size
+}
+
+func (f File) GetNodeType() INodeType {
+	return FileNode
 }
 
 type Command interface {
@@ -89,6 +106,22 @@ func (l ListCommand) GetCommandType() CommandType {
 }
 
 func (l ListCommand) ApplyCommand(filesystem Filesystem) Filesystem {
+	path := strings.Split(filesystem.currentLocation, "/")
+	dir := filesystem.root
+
+	for {
+		if len(path) == 0 {
+			break
+		}
+
+		dir = dir.Children[path[0]].(Directory)
+		_, path = path[0], path[1:]
+	}
+
+	for _, child := range l.Children {
+		dir.Children[child.GetName()] = child
+	}
+
 	return filesystem
 }
 
@@ -106,7 +139,7 @@ func ParseCommandString(commandString []string) Command {
 			nodeSplit := strings.Split(nodeString, " ")
 			var node INode
 			if nodeSplit[0] == "dir" {
-				node = Directory{Name: nodeSplit[1], Children: make([]INode, 0)}
+				node = Directory{Name: nodeSplit[1], Children: make(map[string]INode, 0)}
 			} else {
 				size, _ := strconv.Atoi(nodeSplit[0])
 				node = File{Name: nodeSplit[1], Size: size}
