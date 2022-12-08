@@ -5,9 +5,11 @@ import (
 	"strings"
 )
 
+type CommandType int
+
 const (
-	ChangeDirectory = iota
-	List            = iota
+	ChangeDirectory CommandType = iota
+	List
 )
 
 type INode interface {
@@ -37,14 +39,14 @@ func (f File) GetName() string {
 }
 
 type Command interface {
-	GetCommandType() int
+	GetCommandType() CommandType
 }
 
 type ChangeDirectoryCommand struct {
 	Destination string
 }
 
-func (c ChangeDirectoryCommand) GetCommandType() int {
+func (c ChangeDirectoryCommand) GetCommandType() CommandType {
 	return ChangeDirectory
 }
 
@@ -52,7 +54,7 @@ type ListCommand struct {
 	Children []INode
 }
 
-func (l ListCommand) GetCommandType() int {
+func (l ListCommand) GetCommandType() CommandType {
 	return List
 }
 
@@ -65,7 +67,7 @@ func ParseCommandString(commandString []string) Command {
 			Destination: split[2],
 		}
 	case "ls":
-		command = ListCommand{}
+		childNodes := make([]INode, 0)
 		for _, nodeString := range commandString[1:] {
 			nodeSplit := strings.Split(nodeString, " ")
 			var node INode
@@ -76,20 +78,28 @@ func ParseCommandString(commandString []string) Command {
 				node = File{Name: nodeSplit[1], Size: size}
 			}
 
-			//TODO add node to ListCommand
+			childNodes = append(childNodes, node)
 		}
+		command = ListCommand{Children: childNodes}
 	}
 
 	return command
 }
 
-func ParseInput(input []string) Filesystem {
-	filesystem := Filesystem{
-		tree:            map[string]INode{"/": Directory{}},
-		currentLocation: []string{"/"},
+func ParseInput(input []string) [][]string {
+	commandIndexes := make([]int, 0)
+	for i, line := range input {
+		if strings.Index(line, "$") == 0 {
+			commandIndexes = append(commandIndexes, i)
+		}
 	}
 
-	filesystem.tree["/"] = Directory{}
+	commandStrings := make([][]string, len(commandIndexes))
+	for i := 0; i < len(commandIndexes)-1; i++ {
+		startIndex := commandIndexes[i]
+		endIndex := commandIndexes[i+1]
+		commandStrings[i] = input[startIndex:endIndex]
+	}
 
-	return filesystem
+	return commandStrings
 }
