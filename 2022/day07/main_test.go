@@ -82,20 +82,35 @@ func TestDay07(t *testing.T) {
 		}
 	})
 
-	t.Run("list command", func(t *testing.T) {
+	t.Run("get node on filesystem", func(t *testing.T) {
 		filesystem := NewFilesystem()
-		children := []INode{
-			Directory{Name: "a"},
-			File{Name: "b.txt", Size: 14848514},
-			File{Name: "c.dat", Size: 8504156},
-			Directory{Name: "d"},
-		}
-		command := ListCommand{Children: children}
 
-		filesystem = command.ApplyCommand(filesystem)
+		fileA := File{Name: "a.txt", Size: 1000}
+		dirB := Directory{Name: "b", Children: make(map[string]INode)}
+		filesystem.root.Children[fileA.Name] = fileA
+		filesystem.root.Children[dirB.Name] = dirB
+		fileC := File{Name: "c.dat", Size: 200}
+		dirB.Children[fileC.Name] = fileC
 
-		if len(filesystem.root.Children) != 4 {
-			t.Fatalf("expected %d nodes, got %d", 4, len(filesystem.root.Children))
+		if len(filesystem.root.Children) != 2 {
+			t.Fatalf("expected %d child nodes in the root, got %d", 2, len(filesystem.root.Children))
 		}
 	})
+
+	// t.Run("list command", func(t *testing.T) {
+	// 	filesystem := NewFilesystem()
+	// 	children := []INode{
+	// 		Directory{Name: "a"},
+	// 		File{Name: "b.txt", Size: 14848514},
+	// 		File{Name: "c.dat", Size: 8504156},
+	// 		Directory{Name: "d"},
+	// 	}
+	// 	command := ListCommand{Children: children}
+
+	// 	filesystem = command.ApplyCommand(filesystem)
+
+	// 	if len(filesystem.root.Children) != 4 {
+	// 		t.Fatalf("expected %d nodes, got %d", 4, len(filesystem.root.Children))
+	// 	}
+	// })
 }

@@ -32,7 +32,7 @@ type Filesystem struct {
 
 func NewFilesystem() Filesystem {
 	return Filesystem{
-		root:            Directory{Name: "", Children: make(map[string]INode, 0)},
+		root:            Directory{Name: "", Children: make(map[string]INode)},
 		currentLocation: "/",
 	}
 }
@@ -106,7 +106,7 @@ func (l ListCommand) GetCommandType() CommandType {
 }
 
 func (l ListCommand) ApplyCommand(filesystem Filesystem) Filesystem {
-	path := strings.Split(filesystem.currentLocation, "/")
+	path := strings.Split(filesystem.currentLocation, "/")[1:]
 	dir := filesystem.root
 
 	for {
