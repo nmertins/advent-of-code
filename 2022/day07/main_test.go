@@ -95,22 +95,35 @@ func TestDay07(t *testing.T) {
 		if len(filesystem.root.Children) != 2 {
 			t.Fatalf("expected %d child nodes in the root, got %d", 2, len(filesystem.root.Children))
 		}
+
+		dir := filesystem.GetNodeAtPath("/b")
+		if dir.GetNodeType() != DirectoryNode {
+			t.Fatalf("expected node type %v, got %v", DirectoryNode, dir.GetNodeType())
+		}
+
+		file := filesystem.GetNodeAtPath("/b/c.dat")
+		if file.GetNodeType() != FileNode {
+			t.Fatalf("expected node type %v, got %v", FileNode, file.GetNodeType())
+		}
+		if file.GetSize() != 200 {
+			t.Fatalf("expected file to have size %d, got %d", 200, file.GetSize())
+		}
 	})
 
-	// t.Run("list command", func(t *testing.T) {
-	// 	filesystem := NewFilesystem()
-	// 	children := []INode{
-	// 		Directory{Name: "a"},
-	// 		File{Name: "b.txt", Size: 14848514},
-	// 		File{Name: "c.dat", Size: 8504156},
-	// 		Directory{Name: "d"},
-	// 	}
-	// 	command := ListCommand{Children: children}
+	t.Run("list command", func(t *testing.T) {
+		filesystem := NewFilesystem()
+		children := []INode{
+			Directory{Name: "a"},
+			File{Name: "b.txt", Size: 14848514},
+			File{Name: "c.dat", Size: 8504156},
+			Directory{Name: "d"},
+		}
+		command := ListCommand{Children: children}
 
-	// 	filesystem = command.ApplyCommand(filesystem)
+		filesystem = command.ApplyCommand(filesystem)
 
-	// 	if len(filesystem.root.Children) != 4 {
-	// 		t.Fatalf("expected %d nodes, got %d", 4, len(filesystem.root.Children))
-	// 	}
-	// })
+		if len(filesystem.root.Children) != 4 {
+			t.Fatalf("expected %d nodes, got %d", 4, len(filesystem.root.Children))
+		}
+	})
 }

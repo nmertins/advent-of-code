@@ -30,6 +30,21 @@ type Filesystem struct {
 	currentLocation string
 }
 
+func (f Filesystem) GetNodeAtPath(path string) (node INode) {
+	splitPath := strings.Split(path, "/")[1:]
+	node = f.root
+	for {
+		if len(splitPath) == 0 {
+			break
+		}
+		var next string
+		next, splitPath = splitPath[0], splitPath[1:]
+		node = node.(Directory).Children[next]
+	}
+
+	return node
+}
+
 func NewFilesystem() Filesystem {
 	return Filesystem{
 		root:            Directory{Name: "", Children: make(map[string]INode)},
@@ -106,17 +121,8 @@ func (l ListCommand) GetCommandType() CommandType {
 }
 
 func (l ListCommand) ApplyCommand(filesystem Filesystem) Filesystem {
-	path := strings.Split(filesystem.currentLocation, "/")[1:]
-	dir := filesystem.root
-
-	for {
-		if len(path) == 0 {
-			break
-		}
-
-		dir = dir.Children[path[0]].(Directory)
-		_, path = path[0], path[1:]
-	}
+	pathToAddChildren := filesystem.currentLocation
+	dir := filesystem.GetNodeAtPath(pathToAddChildren).(Directory)
 
 	for _, child := range l.Children {
 		dir.Children[child.GetName()] = child
