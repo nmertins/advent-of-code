@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/nmertins/advent-of-code/2022/utils"
 )
 
 type CommandType int
@@ -31,6 +34,10 @@ type Filesystem struct {
 }
 
 func (f Filesystem) GetNodeAtPath(path string) (node INode) {
+	if path == "/" {
+		return f.root
+	}
+
 	splitPath := strings.Split(path, "/")[1:]
 	node = f.root
 	for {
@@ -62,7 +69,26 @@ func (d Directory) GetName() string {
 }
 
 func (d Directory) GetSize() int {
-	return 0
+	total := 0
+	for _, val := range d.Children {
+		total += val.GetSize()
+	}
+	return total
+}
+
+func (d Directory) GetSizeIfLessThanLimit(sizeLimit int) int {
+	total := 0
+	for _, val := range d.Children {
+		size := val.GetSize()
+		if val.GetNodeType() == DirectoryNode {
+			if size > sizeLimit {
+				total += val.(Directory).GetSizeIfLessThanLimit(sizeLimit)
+			} else {
+				total += size
+			}
+		}
+	}
+	return total
 }
 
 func (d Directory) GetNodeType() INodeType {
@@ -102,12 +128,24 @@ func (c ChangeDirectoryCommand) GetCommandType() CommandType {
 func (c ChangeDirectoryCommand) ApplyCommand(filesystem Filesystem) Filesystem {
 	if strings.Index(c.Destination, "/") == 0 {
 		filesystem.currentLocation = c.Destination
-	} else {
-		if strings.LastIndex(filesystem.currentLocation, "/") != len(filesystem.currentLocation)-1 {
-			filesystem.currentLocation += "/"
-		}
-		filesystem.currentLocation += c.Destination
+		return filesystem
 	}
+
+	if c.Destination == ".." {
+		if filesystem.currentLocation == "/" {
+			return filesystem
+		}
+
+		path := strings.Split(strings.Trim(filesystem.currentLocation, "/"), "/")
+		newPath := strings.Join(path[:len(path)-1], "/")
+		filesystem.currentLocation = "/" + newPath
+		return filesystem
+	}
+
+	if strings.LastIndex(filesystem.currentLocation, "/") != len(filesystem.currentLocation)-1 {
+		filesystem.currentLocation += "/"
+	}
+	filesystem.currentLocation += c.Destination
 
 	return filesystem
 }
@@ -173,6 +211,20 @@ func ParseInput(input []string) [][]string {
 		endIndex := commandIndexes[i+1]
 		commandStrings[i] = input[startIndex:endIndex]
 	}
+	commandStrings[len(commandStrings)-1] = input[commandIndexes[len(commandIndexes)-1]:]
 
 	return commandStrings
+}
+
+func main() {
+	filesystem := NewFilesystem()
+	input := utils.ReadFile("resources/input.txt")
+	commandStrings := ParseInput(input)
+	for _, commandString := range commandStrings {
+		command := ParseCommandString(commandString)
+		filesystem = command.ApplyCommand(filesystem)
+	}
+
+	size := filesystem.root.GetSizeIfLessThanLimit(100000)
+	fmt.Println(size)
 }

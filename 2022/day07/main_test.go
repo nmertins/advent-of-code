@@ -82,6 +82,23 @@ func TestDay07(t *testing.T) {
 		}
 	})
 
+	t.Run("change directory up one", func(t *testing.T) {
+		filesystem := NewFilesystem()
+		filesystem.currentLocation = "/some/path"
+		command := ChangeDirectoryCommand{Destination: ".."}
+		filesystem = command.ApplyCommand(filesystem)
+
+		if filesystem.currentLocation != "/some" {
+			t.Fatalf("expected %q, got %q", "/some", filesystem.currentLocation)
+		}
+
+		filesystem = command.ApplyCommand(filesystem)
+
+		if filesystem.currentLocation != "/" {
+			t.Fatalf("expected %q, got %q", "/", filesystem.currentLocation)
+		}
+	})
+
 	t.Run("get node on filesystem", func(t *testing.T) {
 		filesystem := NewFilesystem()
 
@@ -113,10 +130,10 @@ func TestDay07(t *testing.T) {
 	t.Run("list command", func(t *testing.T) {
 		filesystem := NewFilesystem()
 		children := []INode{
-			Directory{Name: "a"},
+			Directory{Name: "a", Children: make(map[string]INode)},
 			File{Name: "b.txt", Size: 14848514},
 			File{Name: "c.dat", Size: 8504156},
-			Directory{Name: "d"},
+			Directory{Name: "d", Children: make(map[string]INode)},
 		}
 		command := ListCommand{Children: children}
 
@@ -124,6 +141,41 @@ func TestDay07(t *testing.T) {
 
 		if len(filesystem.root.Children) != 4 {
 			t.Fatalf("expected %d nodes, got %d", 4, len(filesystem.root.Children))
+		}
+	})
+
+	t.Run("get size of directory", func(t *testing.T) {
+		dir := Directory{Name: "test", Children: map[string]INode{
+			"a.txt": File{Name: "a.txt", Size: 123},
+			"b.dat": File{Name: "b.dat", Size: 456},
+		}}
+
+		if dir.GetSize() != (123 + 456) {
+			t.Fatalf("expected directory size to be %d, got %d", 123+456, dir.GetSize())
+		}
+	})
+
+	t.Run("test sample input", func(t *testing.T) {
+		filesystem := NewFilesystem()
+		input := utils.ReadFile("resources/sample_input.txt")
+		commandStrings := ParseInput(input)
+		for _, commandString := range commandStrings {
+			command := ParseCommandString(commandString)
+			filesystem = command.ApplyCommand(filesystem)
+		}
+
+		e := filesystem.GetNodeAtPath("/a/e")
+		if e.GetSize() != 584 {
+			t.Fatalf("expected directory e to have size %d, got %d", 584, e.GetSize())
+		}
+
+		root := filesystem.root
+		if root.GetSize() != 48381165 {
+			t.Fatalf("expected filesystem to have total size %d, got %d", 48381165, root.GetSize())
+		}
+
+		if root.GetSizeIfLessThanLimit(100000) != 95437 {
+			t.Fatalf("expected %d, got %d", 95437, root.GetSizeIfLessThanLimit(100000))
 		}
 	})
 }
