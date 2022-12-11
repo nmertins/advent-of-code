@@ -76,19 +76,20 @@ func (d Directory) GetSize() int {
 	return total
 }
 
-func (d Directory) GetSizeIfLessThanLimit(sizeLimit int) int {
-	total := 0
-	for _, val := range d.Children {
-		size := val.GetSize()
-		if val.GetNodeType() == DirectoryNode {
-			if size > sizeLimit {
-				total += val.(Directory).GetSizeIfLessThanLimit(sizeLimit)
-			} else {
-				total += size
-			}
+func (d Directory) GetSizeIfLessThanLimit(sizeLimit int) []int {
+	size := d.GetSize()
+	sizes := make([]int, 0)
+	if size <= sizeLimit {
+		sizes = append(sizes, size)
+	}
+
+	for _, child := range d.Children {
+		if child.GetNodeType() == DirectoryNode {
+			sizes = append(sizes, child.(Directory).GetSizeIfLessThanLimit(sizeLimit)...)
 		}
 	}
-	return total
+
+	return sizes
 }
 
 func (d Directory) GetNodeType() INodeType {
@@ -225,6 +226,13 @@ func main() {
 		filesystem = command.ApplyCommand(filesystem)
 	}
 
-	size := filesystem.root.GetSizeIfLessThanLimit(100000)
-	fmt.Println(size)
+	sizeLimit := 100000
+	sizes := filesystem.root.GetSizeIfLessThanLimit(sizeLimit)
+
+	total := 0
+	for _, dirSize := range sizes {
+		total += dirSize
+	}
+
+	fmt.Println(total)
 }

@@ -174,8 +174,15 @@ func TestDay07(t *testing.T) {
 			t.Fatalf("expected filesystem to have total size %d, got %d", 48381165, root.GetSize())
 		}
 
-		if root.GetSizeIfLessThanLimit(100000) != 95437 {
-			t.Fatalf("expected %d, got %d", 95437, root.GetSizeIfLessThanLimit(100000))
+		sizes := root.GetSizeIfLessThanLimit(100000)
+
+		total := 0
+		for _, dirSize := range sizes {
+			total += dirSize
+		}
+
+		if total != 95437 {
+			t.Fatalf("expected %d, got %d", 95437, total)
 		}
 	})
 }
