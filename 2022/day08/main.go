@@ -85,8 +85,46 @@ func (t TreePatch) GetNumberOfVisibleTrees() int {
 	return total
 }
 
-func (t TreePatch) GetNumberOfVisibleTreesFromPoint(row int, column int) int {
-	return 0
+func (t TreePatch) GetNumberOfVisibleTreesFromPoint(row int, column int) (int, int) {
+	size := t[row][column]
+
+	northTotal := 0
+	north := t.GetTreesNorthOf(row, column)
+	for i := len(north) - 1; i >= 0; i-- {
+		northTotal++
+		if north[i] >= size {
+			break
+		}
+	}
+
+	eastTotal := 0
+	east := t.GetTreesEastOf(row, column)
+	for i := 0; i < len(east); i++ {
+		eastTotal++
+		if east[i] >= size {
+			break
+		}
+	}
+
+	southTotal := 0
+	south := t.GetTreesSouthOf(row, column)
+	for i := 0; i < len(south); i++ {
+		southTotal++
+		if south[i] >= size {
+			break
+		}
+	}
+
+	westTotal := 0
+	west := t.GetTreesWestOf(row, column)
+	for i := len(west) - 1; i >= 0; i-- {
+		westTotal++
+		if west[i] >= size {
+			break
+		}
+	}
+
+	return northTotal + eastTotal + southTotal + westTotal, northTotal * eastTotal * southTotal * westTotal
 }
 
 func ParseInput(input []string) TreePatch {
@@ -104,6 +142,15 @@ func ParseInput(input []string) TreePatch {
 func main() {
 	input := utils.ReadFile("resources/input.txt")
 	trees := ParseInput(input)
-	total := trees.GetNumberOfVisibleTrees()
-	fmt.Println(total)
+	largestScenicScore := 0
+	for i := 0; i < len(trees); i++ {
+		for j := 0; j < len(trees[i]); j++ {
+			_, scenicScore := trees.GetNumberOfVisibleTreesFromPoint(i, j)
+			if scenicScore > largestScenicScore {
+				largestScenicScore = scenicScore
+			}
+		}
+	}
+
+	fmt.Println(largestScenicScore)
 }

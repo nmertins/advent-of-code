@@ -68,20 +68,35 @@ func TestDay08Part1(t *testing.T) {
 		input := utils.ReadFile("resources/sample_input.txt")
 		trees := ParseInput(input)
 		visible := trees.GetNumberOfVisibleTrees()
-		if visible != 21 {
-			t.Fatalf("expected %d trees to be visible, got %d", 21, visible)
-		}
+		assertVisibleTrees(t, 21, visible)
 	})
 }
 
 func TestDay08Part2(t *testing.T) {
 	t.Run("get number of visible trees", func(t *testing.T) {
 		trees := createTreePatch()
-		visibleTrees := trees.GetNumberOfVisibleTreesFromPoint(1, 1)
-		if visibleTrees != 4 {
-			t.Fatalf("expected %d trees to be visible, got %d", 4, visibleTrees)
-		}
+		visibleTrees, _ := trees.GetNumberOfVisibleTreesFromPoint(1, 1)
+		assertVisibleTrees(t, 4, visibleTrees)
 
+		trees = TreePatch{
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 1, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+		}
+		visibleTrees, _ = trees.GetNumberOfVisibleTreesFromPoint(2, 2)
+		assertVisibleTrees(t, 8, visibleTrees)
+	})
+
+	t.Run("test sample input", func(t *testing.T) {
+		input := utils.ReadFile("resources/sample_input.txt")
+		trees := ParseInput(input)
+		visible, _ := trees.GetNumberOfVisibleTreesFromPoint(1, 2)
+		assertVisibleTrees(t, 6, visible)
+
+		visible, _ = trees.GetNumberOfVisibleTreesFromPoint(3, 2)
+		assertVisibleTrees(t, 7, visible)
 	})
 }
 
@@ -104,5 +119,12 @@ func assertTreeLine(t testing.TB, expected []int, actual []int) {
 	t.Helper()
 	if !reflect.DeepEqual(expected, actual) {
 		t.Fatalf("expected %v, actual %v", expected, actual)
+	}
+}
+
+func assertVisibleTrees(t testing.TB, expected int, actual int) {
+	t.Helper()
+	if expected != actual {
+		t.Fatalf("expected %d trees to be visible, got %d", expected, actual)
 	}
 }
