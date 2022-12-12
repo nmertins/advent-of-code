@@ -226,13 +226,17 @@ func main() {
 		filesystem = command.ApplyCommand(filesystem)
 	}
 
-	sizeLimit := 100000
+	filesystem.root.GetSize()
+
+	sizeLimit := 70000000
+	spaceNeededForUpgrade := 30000000
+	sizeOfRoot := 43598596
 	sizes := filesystem.root.GetSizeIfLessThanLimit(sizeLimit)
 
-	total := 0
-	for _, dirSize := range sizes {
-		total += dirSize
+	freeSpace := sizeLimit - sizeOfRoot
+	spaceToClear := spaceNeededForUpgrade - freeSpace
+	for i := range sizes {
+		fmt.Printf("Original size: %d\n", sizes[i])
+		fmt.Printf("Freed space: %d\n", sizes[i]-spaceToClear)
 	}
-
-	fmt.Println(total)
 }
