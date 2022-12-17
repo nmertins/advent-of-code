@@ -24,6 +24,22 @@ type Rope struct {
 	Tail [2]int
 }
 
+func (r *Rope) MoveHead(motion Motion) {
+	for i := 0; i < motion.Distance; i++ {
+		switch motion.Direction {
+		case Right:
+			r.Head[0]++
+		case Up:
+			r.Head[1]++
+		case Left:
+			r.Head[0]--
+		case Down:
+			r.Head[1]--
+		}
+		r.UpdateTail()
+	}
+}
+
 func (r *Rope) UpdateTail() {
 	xHead := r.Head[0]
 	yHead := r.Head[1]

@@ -12,18 +12,64 @@ func TestDay09(t *testing.T) {
 		input := utils.ReadFile("resources/sample_input.txt")
 		motions := ParseInput(input)
 		if len(motions) != 8 {
-			t.Fatalf("expected %d motions in sample input, got %d", 8, len(motions))
+			t.Errorf("expected %d motions in sample input, got %d", 8, len(motions))
 		}
 
 		if motions[0].Direction != Right {
-			t.Fatalf("expected direction %v, got %v", Right, motions[0].Direction)
+			t.Errorf("expected direction %v, got %v", Right, motions[0].Direction)
 		}
 		if motions[0].Distance != 4 {
-			t.Fatalf("expected distance %d, got %d", 4, motions[0].Distance)
+			t.Errorf("expected distance %d, got %d", 4, motions[0].Distance)
 		}
 	})
 
-	t.Run("test rope movement", func(t *testing.T) {
+	t.Run("motions move the head", func(t *testing.T) {
+		testCases := []struct {
+			motions  []Motion
+			expected Rope
+		}{
+			{
+				motions:  []Motion{{Direction: Right, Distance: 1}},
+				expected: Rope{Head: [2]int{1, 0}, Tail: [2]int{0, 0}},
+			},
+			{
+				motions:  []Motion{{Direction: Right, Distance: 3}},
+				expected: Rope{Head: [2]int{3, 0}, Tail: [2]int{2, 0}},
+			},
+			{
+				motions:  []Motion{{Direction: Up, Distance: 1}},
+				expected: Rope{Head: [2]int{0, 1}, Tail: [2]int{0, 0}},
+			},
+			{
+				motions:  []Motion{{Direction: Left, Distance: 1}},
+				expected: Rope{Head: [2]int{-1, 0}, Tail: [2]int{0, 0}},
+			},
+			{
+				motions:  []Motion{{Direction: Down, Distance: 1}},
+				expected: Rope{Head: [2]int{0, -1}, Tail: [2]int{0, 0}},
+			},
+			{
+				motions: []Motion{
+					{Direction: Right, Distance: 4},
+					{Direction: Up, Distance: 4},
+				},
+				expected: Rope{Head: [2]int{4, 4}, Tail: [2]int{4, 3}},
+			},
+		}
+
+		for _, testCase := range testCases {
+			rope := createRope()
+			for _, motion := range testCase.motions {
+				rope.MoveHead(motion)
+			}
+
+			if !reflect.DeepEqual(rope, testCase.expected) {
+				t.Errorf("expected rope at %v, got %v", testCase.expected, rope)
+			}
+		}
+	})
+
+	t.Run("tail follows head", func(t *testing.T) {
 		testCases := []struct {
 			description string
 			initial     Rope
@@ -151,4 +197,12 @@ func TestDay09(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("track spaces visited", func(t *testing.T) {
+		t.Error("TODO")
+	})
+}
+
+func createRope() Rope {
+	return Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}}
 }
