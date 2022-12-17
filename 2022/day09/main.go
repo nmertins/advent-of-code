@@ -24,6 +24,8 @@ type Rope struct {
 	Tail [2]int
 }
 
+func (r *Rope) UpdateTail() {}
+
 func ParseInput(input []string) []Motion {
 	motions := make([]Motion, len(input))
 	for i, motionString := range input {
