@@ -127,3 +127,18 @@ func ParseInput(input []string) []Motion {
 	}
 	return motions
 }
+
+func GetUnique(points [][2]int) [][2]int {
+
+	visitedPoints := make(map[[2]int]bool)
+	ret := make([][2]int, 0)
+
+	for _, point := range points {
+		if _, found := visitedPoints[point]; !found {
+			visitedPoints[point] = true
+			ret = append(ret, point)
+		}
+	}
+
+	return ret
+}

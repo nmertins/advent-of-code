@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"reflect"
 	"testing"
 
@@ -211,6 +212,45 @@ func TestDay09(t *testing.T) {
 			t.Fatalf("expected rope at %v, got %v", expected, rope)
 		}
 	})
+}
+
+func TestUniqueArrays(t *testing.T) {
+	points := [][2]int{
+		{2, 0},
+		{2, 2},
+		{1, 0},
+		{1, 2},
+		{1, 0},
+		{2, 1},
+		{0, 2},
+		{1, 2},
+		{0, 2},
+		{2, 2},
+	}
+
+	expected := [][2]int{
+		{2, 0},
+		{2, 2},
+		{1, 0},
+		{1, 2},
+		{2, 1},
+		{0, 2},
+	}
+
+	unique := GetUnique(points)
+
+	if !reflect.DeepEqual(expected, unique) {
+		t.Errorf("expected %v, got %v", expected, unique)
+	}
+}
+
+func createRandomPoints(numberOfPoints int, maxValue int) [][2]int {
+	ret := make([][2]int, numberOfPoints)
+	for i := 0; i < numberOfPoints; i++ {
+		ret[i] = [2]int{rand.Intn(maxValue), rand.Intn(maxValue)}
+	}
+
+	return ret
 }
 
 func createRope() Rope {
