@@ -29,6 +29,12 @@ type Rope struct {
 	visited [][2]int
 }
 
+type IRope interface {
+	Equals(IRope) bool
+	MoveHead(Motion)
+	GetVisitedSpaces() [][2]int
+}
+
 func CreateRope() Rope {
 	return Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}, visited: make([][2]int, 0)}
 }
@@ -52,6 +58,122 @@ func (r *Rope) MoveHead(motion Motion) {
 		r.UpdateTail()
 		r.visited = append(r.visited, r.Tail)
 	}
+}
+
+type Knot struct {
+	location [2]int
+	child    *Knot
+}
+
+type RopeN struct {
+	head *Knot
+	tail *Knot
+}
+
+func (r *RopeN) AddKnot() {
+	knot := &Knot{
+		location: [2]int{0, 0},
+		child:    nil,
+	}
+
+	if r.head == nil {
+		r.head = knot
+	}
+
+	if r.tail == nil {
+		r.tail = knot
+	}
+
+	r.tail.child = knot
+	r.tail = knot
+}
+
+func (k *Knot) UpdateChild(parentLocation [2]int) {
+	k.location = GetNewPosition(k.location, parentLocation)
+
+	if k.child != nil {
+		k.child.UpdateChild(k.location)
+	}
+}
+
+func CreateRopeN(length int) *RopeN {
+	ret := &RopeN{}
+	for i := 0; i < length; i++ {
+		ret.AddKnot()
+	}
+
+	return ret
+}
+
+func GetNewPosition(current [2]int, parent [2]int) [2]int {
+	xHead := parent[0]
+	yHead := parent[1]
+
+	xTail := current[0]
+	yTail := current[1]
+
+	ret := [2]int{xTail, yTail}
+
+	switch xDiff, yDiff := xHead-xTail, yHead-yTail; {
+	// if head is 2 spaces to the right,
+	// then tail should move right 1 space
+	case xDiff > 1 && yDiff == 0:
+		ret[0]++
+	// if head is 2 spaces below,
+	// then tail should move down 1 space
+	case yDiff < -1 && xDiff == 0:
+		ret[1]--
+	// if head is 2 spaces to the left,
+	// then tail should move left 1 space
+	case xDiff < -1 && yDiff == 0:
+		ret[0]--
+	// if head is 2 spaces above,
+	// then tail should move up 1 space
+	case yDiff > 1 && xDiff == 0:
+		ret[1]++
+	// if head is 2 spaces above and 1 space right,
+	// then tail should move diagonally
+	case xDiff > 0 && yDiff > 1:
+		ret[0]++
+		ret[1]++
+	// if head is 2 spaces right and 1 space above,
+	// then tail should move diagonally
+	case xDiff > 1 && yDiff > 0:
+		ret[0]++
+		ret[1]++
+	// if head is 2 spaces above and 1 space left,
+	// then tail should move diagonally
+	case xDiff < 0 && yDiff > 1:
+		ret[0]--
+		ret[1]++
+	// if head is 2 spaces left and 1 space above,
+	// then tail should move diagonally
+	case xDiff < -1 && yDiff > 0:
+		ret[0]--
+		ret[1]++
+	// if head is 2 spaces below and 1 space right,
+	// then tail should move diagonally
+	case xDiff > 0 && yDiff < -1:
+		ret[0]++
+		ret[1]--
+	// if head is 2 spaces right and 1 space below,
+	// then tail should move diagonally
+	case xDiff > 1 && yDiff < 0:
+		ret[0]++
+		ret[1]--
+	// if head is 2 spaces below and 1 space left,
+	// then tail should move diagonally
+	case xDiff < 0 && yDiff < -1:
+		ret[0]--
+		ret[1]--
+	// if head is 2 spaces left and 1 space below,
+	// then tail should move diagonally
+	case xDiff < -1 && yDiff < 0:
+		ret[0]--
+		ret[1]--
+	}
+
+	return ret
 }
 
 func (r *Rope) UpdateTail() {
