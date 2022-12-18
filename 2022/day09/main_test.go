@@ -199,7 +199,17 @@ func TestDay09(t *testing.T) {
 	})
 
 	t.Run("track spaces visited", func(t *testing.T) {
-		t.Error("TODO")
+		input := utils.ReadFile("resources/sample_input.txt")
+		motions := ParseInput(input)
+		rope := createRope()
+		for _, motion := range motions {
+			rope.MoveHead(motion)
+		}
+
+		expected := Rope{Head: [2]int{2, 2}, Tail: [2]int{1, 2}}
+		if !reflect.DeepEqual(expected, rope) {
+			t.Fatalf("expected rope at %v, got %v", expected, rope)
+		}
 	})
 }
 
