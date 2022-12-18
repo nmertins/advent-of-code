@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/nmertins/advent-of-code/2022/utils"
 )
 
 type Direction int
@@ -20,8 +24,17 @@ type Motion struct {
 }
 
 type Rope struct {
-	Head [2]int
-	Tail [2]int
+	Head    [2]int
+	Tail    [2]int
+	visited [][2]int
+}
+
+func CreateRope() Rope {
+	return Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}, visited: make([][2]int, 0)}
+}
+
+func (r Rope) Equals(other Rope) bool {
+	return reflect.DeepEqual(r.Head, other.Head) && reflect.DeepEqual(r.Tail, other.Tail)
 }
 
 func (r *Rope) MoveHead(motion Motion) {
@@ -37,6 +50,7 @@ func (r *Rope) MoveHead(motion Motion) {
 			r.Head[1]--
 		}
 		r.UpdateTail()
+		r.visited = append(r.visited, r.Tail)
 	}
 }
 
@@ -141,4 +155,16 @@ func GetUnique(points [][2]int) [][2]int {
 	}
 
 	return ret
+}
+
+func main() {
+	input := utils.ReadFile("resources/input.txt")
+	motions := ParseInput(input)
+	rope := CreateRope()
+	for _, motion := range motions {
+		rope.MoveHead(motion)
+	}
+
+	uniqueVisited := GetUnique(rope.visited)
+	fmt.Println(len(uniqueVisited))
 }
