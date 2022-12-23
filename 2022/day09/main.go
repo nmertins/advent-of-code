@@ -74,8 +74,9 @@ type Knot struct {
 }
 
 type RopeN struct {
-	head *Knot
-	tail *Knot
+	head    *Knot
+	tail    *Knot
+	visited [][2]int
 }
 
 func (r *RopeN) AddKnot() {
@@ -111,6 +112,35 @@ func CreateRopeN(length int) *RopeN {
 	}
 
 	return ret
+}
+
+func (r *RopeN) MoveHead(motion Motion) {
+	for i := 0; i < motion.Distance; i++ {
+		switch motion.Direction {
+		case Right:
+			r.head.location[0]++
+		case Up:
+			r.head.location[1]++
+		case Left:
+			r.head.location[0]--
+		case Down:
+			r.head.location[1]--
+		}
+		r.head.child.UpdateChild(r.head.location)
+		r.visited = append(r.visited, r.tail.location)
+	}
+}
+
+func (r RopeN) GetVisitedSpaces() [][2]int {
+	return r.visited
+}
+
+func (r RopeN) GetHead() [2]int {
+	return r.head.location
+}
+
+func (r RopeN) GetTail() [2]int {
+	return r.tail.location
 }
 
 func GetNewPosition(current [2]int, parent [2]int) [2]int {
@@ -290,7 +320,8 @@ func GetUnique(points [][2]int) [][2]int {
 func main() {
 	input := utils.ReadFile("resources/input.txt")
 	motions := ParseInput(input)
-	rope := CreateRope()
+	// rope := CreateRope()
+	rope := CreateRopeN(10)
 	for _, motion := range motions {
 		rope.MoveHead(motion)
 	}
