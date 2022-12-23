@@ -23,39 +23,49 @@ type Motion struct {
 }
 
 type Rope struct {
-	Head    [2]int
-	Tail    [2]int
+	head    [2]int
+	tail    [2]int
 	visited [][2]int
 }
 
 type IRope interface {
 	MoveHead(Motion)
 	GetVisitedSpaces() [][2]int
+	GetHead() [2]int
+	GetTail() [2]int
 }
 
-func CreateRope() Rope {
-	return Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}, visited: make([][2]int, 0)}
+func CreateRope() IRope {
+	return &Rope{head: [2]int{0, 0}, tail: [2]int{0, 0}, visited: make([][2]int, 0)}
 }
 
 func (r *Rope) MoveHead(motion Motion) {
 	for i := 0; i < motion.Distance; i++ {
 		switch motion.Direction {
 		case Right:
-			r.Head[0]++
+			r.head[0]++
 		case Up:
-			r.Head[1]++
+			r.head[1]++
 		case Left:
-			r.Head[0]--
+			r.head[0]--
 		case Down:
-			r.Head[1]--
+			r.head[1]--
 		}
 		r.UpdateTail()
-		r.visited = append(r.visited, r.Tail)
+		r.visited = append(r.visited, r.tail)
 	}
 }
 
-func (r *Rope) GetVisitedSpaces() [][2]int {
+func (r Rope) GetVisitedSpaces() [][2]int {
 	return r.visited
+}
+
+func (r Rope) GetHead() [2]int {
+	return r.head
+}
+
+func (r Rope) GetTail() [2]int {
+	return r.tail
 }
 
 type Knot struct {
@@ -175,69 +185,69 @@ func GetNewPosition(current [2]int, parent [2]int) [2]int {
 }
 
 func (r *Rope) UpdateTail() {
-	xHead := r.Head[0]
-	yHead := r.Head[1]
+	xHead := r.head[0]
+	yHead := r.head[1]
 
-	xTail := r.Tail[0]
-	yTail := r.Tail[1]
+	xTail := r.tail[0]
+	yTail := r.tail[1]
 
 	switch xDiff, yDiff := xHead-xTail, yHead-yTail; {
 	// if head is 2 spaces to the right,
 	// then tail should move right 1 space
 	case xDiff > 1 && yDiff == 0:
-		r.Tail[0]++
+		r.tail[0]++
 	// if head is 2 spaces below,
 	// then tail should move down 1 space
 	case yDiff < -1 && xDiff == 0:
-		r.Tail[1]--
+		r.tail[1]--
 	// if head is 2 spaces to the left,
 	// then tail should move left 1 space
 	case xDiff < -1 && yDiff == 0:
-		r.Tail[0]--
+		r.tail[0]--
 	// if head is 2 spaces above,
 	// then tail should move up 1 space
 	case yDiff > 1 && xDiff == 0:
-		r.Tail[1]++
+		r.tail[1]++
 	// if head is 2 spaces above and 1 space right,
 	// then tail should move diagonally
 	case xDiff > 0 && yDiff > 1:
-		r.Tail[0]++
-		r.Tail[1]++
+		r.tail[0]++
+		r.tail[1]++
 	// if head is 2 spaces right and 1 space above,
 	// then tail should move diagonally
 	case xDiff > 1 && yDiff > 0:
-		r.Tail[0]++
-		r.Tail[1]++
+		r.tail[0]++
+		r.tail[1]++
 	// if head is 2 spaces above and 1 space left,
 	// then tail should move diagonally
 	case xDiff < 0 && yDiff > 1:
-		r.Tail[0]--
-		r.Tail[1]++
+		r.tail[0]--
+		r.tail[1]++
 	// if head is 2 spaces left and 1 space above,
 	// then tail should move diagonally
 	case xDiff < -1 && yDiff > 0:
-		r.Tail[0]--
-		r.Tail[1]++
+		r.tail[0]--
+		r.tail[1]++
 	// if head is 2 spaces below and 1 space right,
 	// then tail should move diagonally
 	case xDiff > 0 && yDiff < -1:
-		r.Tail[0]++
-		r.Tail[1]--
+		r.tail[0]++
+		r.tail[1]--
 	// if head is 2 spaces right and 1 space below,
 	// then tail should move diagonally
 	case xDiff > 1 && yDiff < 0:
-		r.Tail[0]++
-		r.Tail[1]--
+		r.tail[0]++
+		r.tail[1]--
 	// if head is 2 spaces below and 1 space left,
 	// then tail should move diagonally
 	case xDiff < 0 && yDiff < -1:
-		r.Tail[0]--
-		r.Tail[1]--
+		r.tail[0]--
+		r.tail[1]--
 	// if head is 2 spaces left and 1 space below,
 	// then tail should move diagonally
 	case xDiff < -1 && yDiff < 0:
-		r.Tail[0]--
-		r.Tail[1]--
+		r.tail[0]--
+		r.tail[1]--
 	}
 }
 

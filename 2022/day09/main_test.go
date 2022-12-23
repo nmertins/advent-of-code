@@ -31,30 +31,30 @@ func TestDay09(t *testing.T) {
 		}{
 			{
 				motions:  []Motion{{Direction: Right, Distance: 1}},
-				expected: Rope{Head: [2]int{1, 0}, Tail: [2]int{0, 0}},
+				expected: Rope{head: [2]int{1, 0}, tail: [2]int{0, 0}},
 			},
 			{
 				motions:  []Motion{{Direction: Right, Distance: 3}},
-				expected: Rope{Head: [2]int{3, 0}, Tail: [2]int{2, 0}},
+				expected: Rope{head: [2]int{3, 0}, tail: [2]int{2, 0}},
 			},
 			{
 				motions:  []Motion{{Direction: Up, Distance: 1}},
-				expected: Rope{Head: [2]int{0, 1}, Tail: [2]int{0, 0}},
+				expected: Rope{head: [2]int{0, 1}, tail: [2]int{0, 0}},
 			},
 			{
 				motions:  []Motion{{Direction: Left, Distance: 1}},
-				expected: Rope{Head: [2]int{-1, 0}, Tail: [2]int{0, 0}},
+				expected: Rope{head: [2]int{-1, 0}, tail: [2]int{0, 0}},
 			},
 			{
 				motions:  []Motion{{Direction: Down, Distance: 1}},
-				expected: Rope{Head: [2]int{0, -1}, Tail: [2]int{0, 0}},
+				expected: Rope{head: [2]int{0, -1}, tail: [2]int{0, 0}},
 			},
 			{
 				motions: []Motion{
 					{Direction: Right, Distance: 4},
 					{Direction: Up, Distance: 4},
 				},
-				expected: Rope{Head: [2]int{4, 4}, Tail: [2]int{4, 3}},
+				expected: Rope{head: [2]int{4, 4}, tail: [2]int{4, 3}},
 			},
 		}
 
@@ -64,7 +64,7 @@ func TestDay09(t *testing.T) {
 				rope.MoveHead(motion)
 			}
 
-			if !Equal(rope, testCase.expected) {
+			if !Equal(rope, &testCase.expected) {
 				t.Errorf("expected rope at %v, got %v", testCase.expected, rope)
 			}
 		}
@@ -79,120 +79,120 @@ func TestDay09(t *testing.T) {
 			// no movement
 			{
 				"head covers tail, no movement",
-				Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, 0}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, 0}, tail: [2]int{0, 0}},
 			},
 			{
 				"head one space right of tail, no movement",
-				Rope{Head: [2]int{1, 0}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{1, 0}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, 0}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, 0}, tail: [2]int{0, 0}},
 			},
 			{
 				"head one space left of tail, no movement",
-				Rope{Head: [2]int{-1, 0}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-1, 0}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, 0}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, 0}, tail: [2]int{0, 0}},
 			},
 			{
 				"head one space above tail, no movement",
-				Rope{Head: [2]int{0, 1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{0, 1}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, 1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, 1}, tail: [2]int{0, 0}},
 			},
 			{
 				"head one space below tail, no movement",
-				Rope{Head: [2]int{0, -1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{0, -1}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, -1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, -1}, tail: [2]int{0, 0}},
 			},
 			{
 				"head upper right diagonal from tail, no movement",
-				Rope{Head: [2]int{1, 1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{1, 1}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, 1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, 1}, tail: [2]int{0, 0}},
 			},
 			{
 				"head upper left diagonal from tail, no movement",
-				Rope{Head: [2]int{-1, 1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-1, 1}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, 1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, 1}, tail: [2]int{0, 0}},
 			},
 			{
 				"head lower right diagonal from tail, no movement",
-				Rope{Head: [2]int{1, -1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{1, -1}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, -1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, -1}, tail: [2]int{0, 0}},
 			},
 			{
 				"head lower left diagonal from tail, no movement",
-				Rope{Head: [2]int{-1, -1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-1, -1}, Tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, -1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, -1}, tail: [2]int{0, 0}},
 			},
 			// linear movement
 			{
 				"head two spaces right of tail, tail moves right one space",
-				Rope{Head: [2]int{2, 0}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{2, 0}, Tail: [2]int{1, 0}},
+				Rope{head: [2]int{2, 0}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{2, 0}, tail: [2]int{1, 0}},
 			},
 			{
 				"head two spaces below tail, tail moves down one space",
-				Rope{Head: [2]int{0, -2}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{0, -2}, Tail: [2]int{0, -1}},
+				Rope{head: [2]int{0, -2}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, -2}, tail: [2]int{0, -1}},
 			},
 			{
 				"head two spaces left of tail, tail moves left one space",
-				Rope{Head: [2]int{-2, 0}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-2, 0}, Tail: [2]int{-1, 0}},
+				Rope{head: [2]int{-2, 0}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-2, 0}, tail: [2]int{-1, 0}},
 			},
 			{
 				"head two spaces above tail, tail moves up one space",
-				Rope{Head: [2]int{0, 2}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{0, 2}, Tail: [2]int{0, 1}},
+				Rope{head: [2]int{0, 2}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{0, 2}, tail: [2]int{0, 1}},
 			},
 			// diagonal movement
 			// upper right
 			{
 				"head two spaces above and one space right of tail, tail moves diagonally",
-				Rope{Head: [2]int{1, 2}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{1, 2}, Tail: [2]int{1, 1}},
+				Rope{head: [2]int{1, 2}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, 2}, tail: [2]int{1, 1}},
 			},
 			{
 				"head two spaces right and one space above tail, tail moves diagonally",
-				Rope{Head: [2]int{2, 1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{2, 1}, Tail: [2]int{1, 1}},
+				Rope{head: [2]int{2, 1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{2, 1}, tail: [2]int{1, 1}},
 			},
 			// upper left
 			{
 				"head two spaces above and one space left of tail, tail moves diagonally",
-				Rope{Head: [2]int{-1, 2}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-1, 2}, Tail: [2]int{-1, 1}},
+				Rope{head: [2]int{-1, 2}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, 2}, tail: [2]int{-1, 1}},
 			},
 			{
 				"head two spaces left and one space above tail, tail moves diagonally",
-				Rope{Head: [2]int{-2, 1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-2, 1}, Tail: [2]int{-1, 1}},
+				Rope{head: [2]int{-2, 1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-2, 1}, tail: [2]int{-1, 1}},
 			},
 			// lower right
 			{
 				"head two spaces below and one space right of tail, tail moves diagonally",
-				Rope{Head: [2]int{1, -2}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{1, -2}, Tail: [2]int{1, -1}},
+				Rope{head: [2]int{1, -2}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{1, -2}, tail: [2]int{1, -1}},
 			},
 			{
 				"head two spaces right and one space below tail, tail moves diagonally",
-				Rope{Head: [2]int{2, -1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{2, -1}, Tail: [2]int{1, -1}},
+				Rope{head: [2]int{2, -1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{2, -1}, tail: [2]int{1, -1}},
 			},
 			// lower left
 			{
 				"head two spaces below and one space left of tail, tail moves diagonally",
-				Rope{Head: [2]int{-1, -2}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-1, -2}, Tail: [2]int{-1, -1}},
+				Rope{head: [2]int{-1, -2}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-1, -2}, tail: [2]int{-1, -1}},
 			},
 			{
 				"head two spaces left and one space below tail, tail moves diagonally",
-				Rope{Head: [2]int{-2, -1}, Tail: [2]int{0, 0}},
-				Rope{Head: [2]int{-2, -1}, Tail: [2]int{-1, -1}},
+				Rope{head: [2]int{-2, -1}, tail: [2]int{0, 0}},
+				Rope{head: [2]int{-2, -1}, tail: [2]int{-1, -1}},
 			},
 		}
 
 		for _, testCase := range testCases {
 			testCase.initial.UpdateTail()
-			if !Equal(testCase.initial, testCase.expected) {
+			if !Equal(&testCase.initial, &testCase.expected) {
 				t.Errorf("Test case: %q\n", testCase.description)
 				t.Errorf("expected rope at %v, got %v\n", testCase.expected, testCase.initial)
 			}
@@ -207,7 +207,7 @@ func TestDay09(t *testing.T) {
 			rope.MoveHead(motion)
 		}
 
-		expected := Rope{Head: [2]int{2, 2}, Tail: [2]int{1, 2}}
+		expected := &Rope{head: [2]int{2, 2}, tail: [2]int{1, 2}}
 		if !Equal(rope, expected) {
 			t.Fatalf("expected rope at %v, got %v", expected, rope)
 		}
@@ -259,6 +259,6 @@ func createRandomPoints(numberOfPoints int, maxValue int) [][2]int {
 	return ret
 }
 
-func Equal(first Rope, second Rope) bool {
-	return reflect.DeepEqual(first.Head, second.Head) && reflect.DeepEqual(first.Tail, second.Tail)
+func Equal(first IRope, second IRope) bool {
+	return reflect.DeepEqual(first.GetHead(), second.GetHead()) && reflect.DeepEqual(first.GetTail(), second.GetTail())
 }
