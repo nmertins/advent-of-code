@@ -64,7 +64,7 @@ func TestDay09(t *testing.T) {
 				rope.MoveHead(motion)
 			}
 
-			if !rope.Equals(testCase.expected) {
+			if !Equal(rope, testCase.expected) {
 				t.Errorf("expected rope at %v, got %v", testCase.expected, rope)
 			}
 		}
@@ -192,7 +192,7 @@ func TestDay09(t *testing.T) {
 
 		for _, testCase := range testCases {
 			testCase.initial.UpdateTail()
-			if !testCase.initial.Equals(testCase.expected) {
+			if !Equal(testCase.initial, testCase.expected) {
 				t.Errorf("Test case: %q\n", testCase.description)
 				t.Errorf("expected rope at %v, got %v\n", testCase.expected, testCase.initial)
 			}
@@ -208,11 +208,11 @@ func TestDay09(t *testing.T) {
 		}
 
 		expected := Rope{Head: [2]int{2, 2}, Tail: [2]int{1, 2}}
-		if !rope.Equals(expected) {
+		if !Equal(rope, expected) {
 			t.Fatalf("expected rope at %v, got %v", expected, rope)
 		}
 
-		uniqueVisited := GetUnique(rope.visited)
+		uniqueVisited := GetUnique(rope.GetVisitedSpaces())
 		expectedLength := 13
 		if len(uniqueVisited) != expectedLength {
 			t.Errorf("expected tail to visit %d unique spaces, got %d", expectedLength, len(uniqueVisited))
@@ -257,4 +257,8 @@ func createRandomPoints(numberOfPoints int, maxValue int) [][2]int {
 	}
 
 	return ret
+}
+
+func Equal(first Rope, second Rope) bool {
+	return reflect.DeepEqual(first.Head, second.Head) && reflect.DeepEqual(first.Tail, second.Tail)
 }

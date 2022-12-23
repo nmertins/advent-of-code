@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -30,17 +29,12 @@ type Rope struct {
 }
 
 type IRope interface {
-	Equals(IRope) bool
 	MoveHead(Motion)
 	GetVisitedSpaces() [][2]int
 }
 
 func CreateRope() Rope {
 	return Rope{Head: [2]int{0, 0}, Tail: [2]int{0, 0}, visited: make([][2]int, 0)}
-}
-
-func (r Rope) Equals(other Rope) bool {
-	return reflect.DeepEqual(r.Head, other.Head) && reflect.DeepEqual(r.Tail, other.Tail)
 }
 
 func (r *Rope) MoveHead(motion Motion) {
@@ -58,6 +52,10 @@ func (r *Rope) MoveHead(motion Motion) {
 		r.UpdateTail()
 		r.visited = append(r.visited, r.Tail)
 	}
+}
+
+func (r *Rope) GetVisitedSpaces() [][2]int {
+	return r.visited
 }
 
 type Knot struct {
@@ -287,6 +285,6 @@ func main() {
 		rope.MoveHead(motion)
 	}
 
-	uniqueVisited := GetUnique(rope.visited)
+	uniqueVisited := GetUnique(rope.GetVisitedSpaces())
 	fmt.Println(len(uniqueVisited))
 }
